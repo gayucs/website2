@@ -1,0 +1,300 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trader Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+        }
+
+        #sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            background-color: black; 
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar .nav-link {
+            font-size: 1.1em;
+            padding: 1em;
+            color: white;
+        }
+
+        .sidebar .nav-link.active {
+            color: black;
+            background-color: white;
+        }
+
+        .card {
+            margin-bottom: 1.5em;
+            background-color: #333;
+            border: 1px solid #444;
+        }
+
+        .card-header {
+            background-color: #444;
+            color: white;
+        }
+
+        .chart {
+            height: 300px;
+            width: 100%;
+        }
+
+        .summary-card .card-body {
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .btn {
+            margin: 0.2em;
+            background-color: #555;
+            color: white;
+            border: 1px solid #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-2 d-md-block sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">
+                                <i class="fa fa-home"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-chart-line"></i> Market Analysis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-dollar-sign"></i> Trades
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-user"></i> Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-cogs"></i> Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Trader Dashboard</h1>
+                </div>
+<!-- Trading Summary -->
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card summary-card">
+                            <div class="card-header">
+                                Trading Summary
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Current Balance:</strong> $25,000</p>
+                                <p><strong>Total Trades:</strong> 120</p>
+                                <p><strong>Pending Orders:</strong> 5</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and Analysis -->
+                <div class="row">
+                    <!-- Chart 1 -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                Market Trends
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chart1" class="chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chart 2 -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                Trade History
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chart2" class="chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pie Chart -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                Trade Distribution
+                            </div>
+                            <div class="card-body">
+                                <canvas id="pieChart" class="chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<!-- GIF Section -->
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                Market Overview GIF
+                            </div>
+                            <div class="card-body text-center">
+                                <img src="https://cdn.dribbble.com/users/5094323/screenshots/11184058/media/21d762e9bf83e02db2e7c2fab41320e1.gif" alt="Market Overview" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx1 = document.getElementById('chart1').getContext('2d');
+            var ctx2 = document.getElementById('chart2').getContext('2d');
+            var ctxPie = document.getElementById('pieChart').getContext('2d');
+
+            var chart1 = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                    datasets: [{
+                        label: 'Market Trends',
+                        data: [12, 19, 3, 5, 2, 3, 7],
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutBounce'
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#666'
+                            },
+                            ticks: {
+                                color: '#ccc'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#666'
+                            },
+                            ticks: {
+                                color: '#ccc'
+                            }
+                        }
+                    }
+                }
+            });
+var chart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Trade A', 'Trade B', 'Trade C', 'Trade D', 'Trade E'],
+                    datasets: [{
+                        label: 'Trade History',
+                        data: [10, 20, 15, 25, 30],
+                        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutCubic'
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#666'
+                            },
+                            ticks: {
+                                color: '#ccc'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#666'
+                            },
+                            ticks: {
+                                color: '#ccc'
+                            }
+                        }
+                    }
+                }
+            });
+
+            var pieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: ['Trade A', 'Trade B', 'Trade C', 'Trade D', 'Trade E'],
+                    datasets: [{
+                        label: 'Trade Distribution',
+                        data: [10, 20, 15, 25, 30],
+                        backgroundColor: [
+                            ' #8FBC8F',
+                            'rgba(200, 200, 200, 0.5)',
+                            'rgba(150, 150, 150, 0.5)',
+                            'rgba(100, 100, 100, 0.5)',
+                            'rgba(50, 50, 50, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 255, 255, 0.8)',
+                            'rgba(200, 200, 200, 0.8)',
+                            'rgba(150, 150, 150, 0.8)',
+                            'rgba(100, 100, 100, 0.8)',
+                            'rgba(50, 50, 50, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuad'
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
